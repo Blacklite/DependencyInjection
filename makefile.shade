@@ -1,7 +1,10 @@
 use import="Environment"
 
 @{
-    if (E("APPVEYOR") == null || E("APPVEYOR_REPO_TAG") == "False") {
+    if (E("APPVEYOR") == null) {
+        E("K_BUILD_VERSION", "alpha");
+    }
+    if (E("APPVEYOR") != null && E("APPVEYOR_REPO_TAG") == "True") {
         E("K_BUILD_VERSION", "beta-" + E("K_BUILD_VERSION"));
     }
 }
