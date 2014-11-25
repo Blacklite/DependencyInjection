@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{76CC
 		appveyor.yml = appveyor.yml
 		global.json = global.json
 		NuGet.config = NuGet.config
+		Readme.md = Readme.md
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Compiler.Tests", "tests\DependencyInjection.Compiler.Tests\DependencyInjection.Compiler.Tests.kproj", "{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}"
