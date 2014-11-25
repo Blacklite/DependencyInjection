@@ -1,6 +1,7 @@
 ﻿using Microsoft.Framework.DependencyInjection;
 using System;
 
+// We're cheating here, so we don't have to have two different difference namespaces everywhere
 namespace Microsoft.Framework.DependencyInjection
 {
     [AttributeUsage(AttributeTargets.Class)]

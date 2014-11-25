@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Linq;
 using Xunit;
-using Blacklite.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection;
 using System.Collections.Generic;
 using DependencyInjection.Tests.Fixtures;

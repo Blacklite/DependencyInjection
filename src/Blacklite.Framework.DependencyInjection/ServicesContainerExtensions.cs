@@ -1,10 +1,12 @@
+using Blacklite;
 using Microsoft.Framework.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Blacklite.Framework.DependencyInjection
+// We're cheating here, so we don't have to have two different difference namespaces everywhere
+namespace Microsoft.Framework.DependencyInjection
 {
     public static class ServicesContainerExtensions
     {

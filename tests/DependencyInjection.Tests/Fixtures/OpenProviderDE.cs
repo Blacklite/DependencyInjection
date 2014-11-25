@@ -1,5 +1,4 @@
-﻿using Blacklite.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Framework.DependencyInjection;
 using System;
 
 namespace DependencyInjection.Tests.Fixtures

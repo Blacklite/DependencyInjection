@@ -15,4 +15,5 @@ indent_size = 4
 
 [*.yml]
 indent_style = space
-indent_size = tab
+indent_size = 2
+tab_width = 2
