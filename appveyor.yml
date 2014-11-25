@@ -1,4 +1,4 @@
-version: "1.0.0-{build}"
+version: "1.0.0-beta-{build}"
 
 # Fix line endings in Windows. (runs before repo cloning)
 init:
@@ -8,15 +8,10 @@ init:
 test: off
 
 build_script:
-  - set K_BUILD_VERSION=000%APPVEYOR_BUILD_NUMBER% #temp
+  - set K_BUILD_VERSION=%APPVEYOR_BUILD_NUMBER% #temp
   - set K_BUILD_VERSION=%K_BUILD_VERSION:~-4%
   - build.cmd
 
 artifacts:
   - path: artifacts\build\*.nupkg
 
-deploy:
-  - provider: Environment
-    name: yolodev
-    on:
-      branch: master
