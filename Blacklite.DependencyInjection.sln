@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22310.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.DependencyInjection", "src\Blacklite.Framework.DependencyInjection\Blacklite.Framework.DependencyInjection.kproj", "{81BD83F3-AAE0-4CFE-89F5-74E927050F9C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{732F8612-93E6-44B8-8E75-CBD5895605D8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{85C16FCE-E197-4628-ABF2-A3DD2BD74975}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{76CC9734-81B9-48D8-BC94-A8DB5A25CC1E}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		global.json = global.json
+		NuGet.config = NuGet.config
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Compiler.Tests", "tests\DependencyInjection.Compiler.Tests\DependencyInjection.Compiler.Tests.kproj", "{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Tests", "tests\DependencyInjection.Tests\DependencyInjection.Tests.kproj", "{093F8D18-6275-4580-A82C-69EB166ABF8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Release|Any CPU.Build.0 = Release|Any CPU
+		{093F8D18-6275-4580-A82C-69EB166ABF8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{093F8D18-6275-4580-A82C-69EB166ABF8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{093F8D18-6275-4580-A82C-69EB166ABF8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{093F8D18-6275-4580-A82C-69EB166ABF8D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C} = {732F8612-93E6-44B8-8E75-CBD5895605D8}
+		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618} = {85C16FCE-E197-4628-ABF2-A3DD2BD74975}
+		{093F8D18-6275-4580-A82C-69EB166ABF8D} = {85C16FCE-E197-4628-ABF2-A3DD2BD74975}
+	EndGlobalSection
+EndGlobal
