@@ -20,8 +20,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{76CC
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Compiler.Tests", "tests\DependencyInjection.Compiler.Tests\DependencyInjection.Compiler.Tests.kproj", "{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}"
-EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Tests", "tests\DependencyInjection.Tests\DependencyInjection.Tests.kproj", "{093F8D18-6275-4580-A82C-69EB166ABF8D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{4D98DF5D-1BAD-4017-85C2-A099A5A4AD02}"
@@ -45,10 +43,6 @@ Global
 		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Release|Any CPU.Build.0 = Release|Any CPU
 		{093F8D18-6275-4580-A82C-69EB166ABF8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{093F8D18-6275-4580-A82C-69EB166ABF8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{093F8D18-6275-4580-A82C-69EB166ABF8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,7 +53,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{81BD83F3-AAE0-4CFE-89F5-74E927050F9C} = {732F8612-93E6-44B8-8E75-CBD5895605D8}
-		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618} = {85C16FCE-E197-4628-ABF2-A3DD2BD74975}
 		{093F8D18-6275-4580-A82C-69EB166ABF8D} = {85C16FCE-E197-4628-ABF2-A3DD2BD74975}
 	EndGlobalSection
 EndGlobal

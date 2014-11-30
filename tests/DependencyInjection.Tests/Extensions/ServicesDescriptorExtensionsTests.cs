@@ -8,34 +8,34 @@ using DependencyInjection.Tests.Fixtures;
 
 namespace DependencyInjection.Tests
 {
-    public class ServicesContainerExtensionsTests
+    public class ServiceDescriberExtensionsTests
     {
         [Fact]
-        public void ServiceCollectionAcceptsObjectContext()
+        public void ServiceDescriberAcceptsObjectContext()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
 
-            collection.AddAssembly(this);
+            var collection = describer.FromAssembly(this);
 
             Assert.Equal(collection.Count(), 14);
         }
 
         [Fact]
-        public void ServiceCollectionAcceptsTypeContext()
+        public void ServiceDescriberAcceptsTypeContext()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
 
-            collection.AddAssembly(typeof(ServicesContainerExtensionsTests));
+            var collection = describer.FromAssembly(typeof(ServicesContainerExtensionsTests));
 
             Assert.Equal(collection.Count(), 14);
         }
 
         [Fact]
-        public void ServiceCollectionAcceptsAssemblyContext()
+        public void ServiceDescriberAcceptsAssemblyContext()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
 
-            collection.AddAssembly(typeof(ServicesContainerExtensionsTests).GetTypeInfo().Assembly);
+            var collection = describer.FromAssembly(typeof(ServicesContainerExtensionsTests).GetTypeInfo().Assembly);
 
             Assert.Equal(collection.Count(), 14);
         }
@@ -53,12 +53,12 @@ namespace DependencyInjection.Tests
             }
         }
 
-        public void ServiceCollectionContainsPublicClassesWhenUsedGenerically()
+        public void ServiceDescriberContainsPublicClassesWhenUsedGenerically()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
             var eqalityComparer = new ServiceDescriptorEqualityComparer();
 
-            collection.AddAssembly(this);
+            var collection = describer.FromAssembly(this);
 
             var descriptor = new ServiceDescriptor(typeof(IProviderB), typeof(ProviderBC), LifecycleKind.Transient);
 
@@ -86,12 +86,12 @@ namespace DependencyInjection.Tests
         }
 
         [Fact]
-        public void ServiceCollectionIncludesProviderA()
+        public void ServiceDescriberIncludesProviderA()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
             var eqalityComparer = new ServiceDescriptorEqualityComparer();
 
-            collection.AddAssembly(this);
+            var collection = describer.FromAssembly(this);
 
             var descriptor = new ServiceDescriptor(typeof(IProviderA), typeof(ProviderA), LifecycleKind.Singleton);
 
@@ -99,12 +99,12 @@ namespace DependencyInjection.Tests
         }
 
         [Fact]
-        public void ServiceCollectionIncludesService1()
+        public void ServiceDescriberIncludesService1()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
             var eqalityComparer = new ServiceDescriptorEqualityComparer();
 
-            collection.AddAssembly(this);
+            var collection = describer.FromAssembly(this);
 
             var descriptor = new ServiceDescriptor(typeof(IService1), typeof(Service1), LifecycleKind.Transient);
 
@@ -112,12 +112,12 @@ namespace DependencyInjection.Tests
         }
 
         [Fact]
-        public void ServiceCollectionIncludesService2()
+        public void ServiceDescriberIncludesService2()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
             var eqalityComparer = new ServiceDescriptorEqualityComparer();
 
-            collection.AddAssembly(this);
+            var collection = describer.FromAssembly(this);
 
             var descriptor = new ServiceDescriptor(typeof(IService2), typeof(Service2), LifecycleKind.Scoped);
 
@@ -125,24 +125,24 @@ namespace DependencyInjection.Tests
         }
 
         [Fact]
-        public void ServiceCollectionIncludsOpenProviderA()
+        public void ServiceDescriberIncludsOpenProviderA()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
             var eqalityComparer = new ServiceDescriptorEqualityComparer();
 
-            collection.AddAssembly(this);
+            var collection = describer.FromAssembly(this);
 
             var descriptor = new ServiceDescriptor(typeof(IOpenProviderA<,>), typeof(OpenProviderA<,>), LifecycleKind.Singleton);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
         }
 
-        public void ServiceCollectionContainsOpenPublicClassesWhenUsedGenerically()
+        public void ServiceDescriberContainsOpenPublicClassesWhenUsedGenerically()
         {
-            var collection = new ServiceCollection();
+            var describer = new ServiceDescriber();
             var eqalityComparer = new ServiceDescriptorEqualityComparer();
 
-            collection.AddAssembly(this);
+            var collection = describer.FromAssembly(this);
 
             var descriptor = new ServiceDescriptor(typeof(IOpenProviderB<>), typeof(OpenProviderBC<>), LifecycleKind.Transient);
 

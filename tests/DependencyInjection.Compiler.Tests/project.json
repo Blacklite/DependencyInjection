@@ -1,7 +1,7 @@
 ﻿{
     "dependencies": {
-        "Blacklite.Framework.DependencyInjection": "",
-        "Xunit.KRunner": "1.0.0-*"
+        "Blacklite.Framework.DependencyInjection.Preprocess": "",
+        "Xunit.KRunner": "1.0.0-beta1-*"
     },
 
     "commands": {
@@ -10,20 +10,8 @@
 
     "frameworks": {
         "aspnet50": {
+            "frameworkAssemblies": { "System.Text.Encoding": "4.0.0.0" },
             "dependencies": {
-                "System.IO": "4.0.0.0",
-                "System.Text.Encoding": "4.0.0.0"
-            }
-        },
-        "aspnetcore50": {
-            "dependencies": {
-                "System.Runtime": "4.0.20.0",
-                "System.Threading": "4.0.0.0",
-                "System.Threading.Tasks": "4.0.10.0",
-                "System.IO": "4.0.0.0",
-                "System.Text.Encoding": "4.0.0.0",
-                "System.Linq": "4.0.0.0",
-                "System.Linq.Expressions": "4.0.0.0"
             }
         }
     }

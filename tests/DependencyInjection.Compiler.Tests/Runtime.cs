@@ -5,34 +5,34 @@
 
 //namespace Microsoft.Framework.Runtime
 //{
-//    //[AssemblyNeutral]
-//    //public class AssemblyNeutralAttribute : Attribute
-//    //{
-//    //}
+//    [AssemblyNeutral]
+//    public class AssemblyNeutralAttribute : Attribute
+//    {
+//    }
 
-//    //[AssemblyNeutral]
-//    //public interface ICompileModule
-//    //{
-//    //    void BeforeCompile(IBeforeCompileContext context);
+//    [AssemblyNeutral]
+//    public interface ICompileModule
+//    {
+//        void BeforeCompile(IBeforeCompileContext context);
 
-//    //    void AfterCompile(IAfterCompileContext context);
-//    //}
+//        void AfterCompile(IAfterCompileContext context);
+//    }
 
-//    //[AssemblyNeutral]
-//    //public interface IBeforeCompileContext
-//    //{
-//    //    CSharpCompilation CSharpCompilation { get; set; }
+//    [AssemblyNeutral]
+//    public interface IBeforeCompileContext
+//    {
+//        CSharpCompilation CSharpCompilation { get; set; }
 
-//    //    IList<ResourceDescription> Resources { get; }
+//        IList<ResourceDescription> Resources { get; }
 
-//    //    IList<Diagnostic> Diagnostics { get; }
-//    //}
+//        IList<Diagnostic> Diagnostics { get; }
+//    }
 
-//    //[AssemblyNeutral]
-//    //public interface IAfterCompileContext
-//    //{
-//    //    CSharpCompilation CSharpCompilation { get; set; }
+//    [AssemblyNeutral]
+//    public interface IAfterCompileContext
+//    {
+//        CSharpCompilation CSharpCompilation { get; set; }
 
-//    //    IList<Diagnostic> Diagnostics { get; }
-//    //}
+//        IList<Diagnostic> Diagnostics { get; }
+//    }
 //}
