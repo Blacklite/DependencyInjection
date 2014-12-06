@@ -9,9 +9,9 @@
     "frameworks": {
         "aspnet50": {
             "frameworkAssemblies": {
-                "System.Runtime": "",
-                "System.Collections": "",
-                "System.Threading.Tasks": ""
+                "System.Runtime": "4.0.0.0",
+                "System.Collections": "4.0.10.0",
+                "System.Threading.Tasks": "4.0.10.0"
             }
         },
         "aspnetcore50": {
