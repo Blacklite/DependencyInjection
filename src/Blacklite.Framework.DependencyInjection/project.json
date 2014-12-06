@@ -9,18 +9,19 @@
     "frameworks": {
         "aspnet50": {
             "frameworkAssemblies": {
-                "System.Collections": "4.0.10.0",
-                "System.Threading.Tasks": "4.0.10.0",
                 "System.Runtime": "4.0.20.0",
-                "System.IO": "4.0.0.0"
+                "System.Collections": "4.0.10.0",
+                "System.Threading.Tasks": "4.0.10.0"
             },
             "dependencies": {
+                "System.Runtime": "4.0.20-beta-*",
+                "System.Collections": "4.0.10-beta-*",
+                "System.Threading.Tasks": "4.0.10-beta-*"
             }
         },
         "aspnetcore50": {
             "dependencies": {
                 "System.Runtime": "4.0.20-beta-*",
-                "System.IO": "4.0.10-beta-*",
                 "System.Collections": "4.0.10-beta-*",
                 "System.ComponentModel": "4.0.0-beta-*",
                 "System.Reflection": "4.0.10-beta-*",
