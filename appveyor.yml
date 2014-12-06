@@ -2,7 +2,7 @@
   version: "1.0.0-{build}"
   branches:
     except:
-	  - refs/pull/*
+      - refs/pull/*
 
   # Fix line endings in Windows. (runs before repo cloning)
   init:
