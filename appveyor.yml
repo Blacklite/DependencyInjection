@@ -15,10 +15,10 @@
   build_script:
     - set K_BUILD_VERSION=%APPVEYOR_BUILD_NUMBER% #temp
     - set K_BUILD_VERSION=%K_BUILD_VERSION:~-4%
-    - echo APPVEYOR
-    - echo APPVEYOR_REPO_TAG
-    - echo APPVEYOR_REPO_BRANCH
-    - echo K_BUILD_VERSION
+    - echo %APPVEYOR%
+    - echo %APPVEYOR_REPO_TAG%
+    - echo %APPVEYOR_REPO_BRANCH%
+    - echo %K_BUILD_VERSION%
     - build.cmd
 
 -
@@ -38,10 +38,10 @@
   build_script:
     - set K_BUILD_VERSION=%APPVEYOR_BUILD_NUMBER% #temp
     - set K_BUILD_VERSION=%K_BUILD_VERSION:~-4%
-    - echo APPVEYOR
-    - echo APPVEYOR_REPO_TAG
-    - echo APPVEYOR_REPO_BRANCH
-    - echo K_BUILD_VERSION
+    - echo %APPVEYOR%
+    - echo %APPVEYOR_REPO_TAG%
+    - echo %APPVEYOR_REPO_BRANCH%
+    - echo %K_BUILD_VERSION%
     - build.cmd
 
   artifacts:
