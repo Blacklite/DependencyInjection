@@ -12,7 +12,7 @@ using Blacklite.Framework.DependencyInjection.compiler.preprocess;
 namespace DependencyInjection.Compiler.Tests.Compiler
 {
 
-    public class PreprocessAnnotationTests
+    public class PreprocessFromAssemblyTests
     {
         private CSharpCompilation GetCompilation()
         {
@@ -24,37 +24,50 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                 // This way we don't have to reference anything but mscorlib.
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
                     using System;
-
-                    public enum LifecycleKind {
-                        Singleton,
-                        Scoped,
-	                    Transient
-                    }
-
-                    [AttributeUsage(AttributeTargets.Class)]
-                    public class ServiceDescriptorAttribute : Attribute
-                    {
-                        public ServiceDescriptorAttribute(Type serviceType = null)
-                        {
-                            ServiceType = serviceType;
+                    
+                    namespace Microsoft.Framework.DependencyInjection {
+                        public enum LifecycleKind {
+                            Singleton,
+                            Scoped,
+	                        Transient
                         }
 
-                        public Type ServiceType { get; set; }
-                        public LifecycleKind Lifecycle { get; set; } = LifecycleKind.Transient;
-                    }
+                        [AttributeUsage(AttributeTargets.Class)]
+                        public class ServiceDescriptorAttribute : Attribute
+                        {
+                            public ServiceDescriptorAttribute(Type serviceType = null)
+                            {
+                                ServiceType = serviceType;
+                            }
 
-                    public interface IServiceCollection {}
+                            public Type ServiceType { get; set; }
+                            public LifecycleKind Lifecycle { get; set; } = LifecycleKind.Transient;
+                        }
 
-                    public static class ServiceCollectionExtensions {
-                        public static IServiceCollection AddAssembly(this IServiceCollection collection, Type type, bool compile = true) {
-                            return collection;
+                        public class ServiceDescriber {}
+
+                        public static class ServiceDescriberExtensions {
+                            public static IEnumerable<IServiceDescriptor> FromAssembly(this ServiceDescriber describer, Assembly assembly) {
+                                return Enumerable.Empty<IServiceDescriptor>();
+                            }
+
+                            public static IEnumerable<IServiceDescriptor> FromAssembly(this ServiceDescriber describer, Type type) {
+                                return Enumerable.Empty<IServiceDescriptor>();
+                            }
+
+                            public static IEnumerable<IServiceDescriptor> FromAssembly(this ServiceDescriber describer, object @this) {
+                                return Enumerable.Empty<IServiceDescriptor>();
+                            }
                         }
                     }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)))
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
+using Microsoft.Framework.DependencyInjection;
+
                     namespace Temp {
                         public class Startup {
-                            void Configure(IServiceCollection services) {
-                                services.AddAssembly(typeof(Startup));
+                            IEnumerable<IServiceDescriptor> Configure() {
+                                var describer = new ServiceDescriber();
+                                return describer.FromAssembly(typeof(Startup));
                             }
 
                             public static int Main() { return 0; }
@@ -79,12 +92,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            }
+
+            ;
         }
 
         public static int Main()
@@ -99,7 +120,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void DefaultsToTransient()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -128,13 +151,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddTransient(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Transient(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA))}
+
+            ;
         }
 
         public static int Main()
@@ -150,7 +180,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void UnderstandsTransient()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -179,13 +211,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddTransient(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Transient(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA))}
+
+            ;
         }
 
         public static int Main()
@@ -201,7 +240,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void UnderstandsScoped()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -230,13 +271,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddScoped(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Scoped(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA))}
+
+            ;
         }
 
         public static int Main()
@@ -251,7 +299,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void UnderstandsSingleton()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -280,13 +330,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddSingleton(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Singleton(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA))}
+
+            ;
         }
 
         public static int Main()
@@ -301,7 +358,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void UnderstandsEverything()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -317,7 +376,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                         }
                     }
                 }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)))
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderB1
                     {
@@ -333,7 +394,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                         }
                     }
                 }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)))
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderB
                     {
@@ -349,7 +412,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                         }
                     }
                 }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)))
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderC
                     {
@@ -378,16 +443,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddSingleton(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA));
-            services.AddTransient(typeof (Temp.Providers.IProviderB1), typeof (Temp.Providers.ProviderB1));
-            services.AddTransient(typeof (Temp.Providers.IProviderB), typeof (Temp.Providers.ProviderB));
-            services.AddScoped(typeof (Temp.Providers.IProviderC), typeof (Temp.Providers.ProviderC));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Singleton(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA)), describer.Transient(typeof (Temp.Providers.IProviderB1), typeof (Temp.Providers.ProviderB1)), describer.Transient(typeof (Temp.Providers.IProviderB), typeof (Temp.Providers.ProviderB)), describer.Scoped(typeof (Temp.Providers.IProviderC), typeof (Temp.Providers.ProviderC))}
+
+            ;
         }
 
         public static int Main()
@@ -402,7 +471,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void ReportsDiagnostics()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -440,10 +511,23 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         }
 
         [Fact]
-        public void AddAssemblyWorksWithThisExpression()
+        public void FromAssemblyWorksWithThisExpression()
         {
             var compilation = GetCompilation();
 
+            compilation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+
+                        namespace Temp {
+                            public class Startup {
+                                IEnumerable<IServiceDescriptor> Configure() {
+                                    var describer = new ServiceDescriber();
+                                    return describer.FromAssembly(this);
+                                }
+
+                                public static int Main() { return 0; }
+                            }
+                        }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
 
             var context = new BeforeCompileContext()
             {
@@ -457,12 +541,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            }
+
+            ;
         }
 
         public static int Main()
@@ -474,17 +566,130 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         }
 
         [Fact]
-        public void AddAssemblyIsLeftAloneForOtherTypes()
+        public void FromAssemblyWorksWithTypeExpression()
+        {
+            var compilation = GetCompilation();
+
+            compilation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+
+                        namespace Temp {
+                            public class Startup {
+                                IEnumerable<IServiceDescriptor> Configure() {
+                                    var describer = new ServiceDescriber();
+                                    return describer.FromAssembly(typeof(Startup));
+                                }
+
+                                public static int Main() { return 0; }
+                            }
+                        }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
+
+            var context = new BeforeCompileContext()
+            {
+                CSharpCompilation = compilation
+            };
+
+            var unit = new PreprocessAnnotation();
+
+            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            Assert.False(context.Diagnostics.Any());
+
+            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
+{
+    public class Startup
+    {
+        IEnumerable<IServiceDescriptor> Configure()
+        {
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            }
+
+            ;
+        }
+
+        public static int Main()
+        {
+            return 0;
+        }
+    }
+}", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+        }
+
+        [Fact]
+        public void FromAssemblyWorksWithAssemblyExpression()
+        {
+            var compilation = GetCompilation();
+
+            compilation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+
+                        namespace Temp {
+                            public class Startup {
+                                IEnumerable<IServiceDescriptor> Configure() {
+                                    var describer = new ServiceDescriber();
+                                    return describer.FromAssembly(typeof(Startup).GetTypeInfo().Assembly);
+                                }
+
+                                public static int Main() { return 0; }
+                            }
+                        }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
+
+            var context = new BeforeCompileContext()
+            {
+                CSharpCompilation = compilation
+            };
+
+            var unit = new PreprocessAnnotation();
+
+            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            Assert.False(context.Diagnostics.Any());
+
+            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
+{
+    public class Startup
+    {
+        IEnumerable<IServiceDescriptor> Configure()
+        {
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            }
+
+            ;
+        }
+
+        public static int Main()
+        {
+            return 0;
+        }
+    }
+}", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+        }
+
+        [Fact]
+        public void FromAssemblyIsLeftAloneForOtherTypes()
         {
             var compilation = GetCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
+                    using Microsoft.Framework.DependencyInjection;
+
                     namespace Temp {
                         public class NotStartup {
                         }
 
                         public class Startup2 {
                             void Configure(IServiceCollection collection) {
-                                collection.AddAssembly(typeof(NotStartup));
+                                var describer = new ServiceDescriber();
+                                return describer.FromAssembly(typeof(NotStartup));
                             }
                         }
                     }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
@@ -503,27 +708,33 @@ namespace DependencyInjection.Compiler.Tests.Compiler
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
 
             Assert.Equal(@"
+                    using Microsoft.Framework.DependencyInjection;
+
                     namespace Temp {
                         public class NotStartup {
                         }
 
                         public class Startup2 {
                             void Configure(IServiceCollection collection) {
-                                collection.AddAssembly(typeof(NotStartup));
+                                var describer = new ServiceDescriber();
+                                return describer.FromAssembly(typeof(NotStartup));
                             }
                         }
                     }", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
         }
 
         [Fact]
-        public void AddAssemblyIsReplacedByDefault()
+        public void FromAssemblyIsReplacedByDefault()
         {
             var compilation = GetCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
+                    using Microsoft.Framework.DependencyInjection;
+
                     namespace Temp {
                         public class Startup2 {
                             void Configure(IServiceCollection collection) {
-                                collection.AddAssembly(typeof(Startup2));
+                                var describer = new ServiceDescriber();
+                                return describer.FromAssembly(typeof(Startup2));
                             }
                         }
                     }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
@@ -541,12 +752,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup2
     {
         void Configure(IServiceCollection collection)
         {
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            }
+
+            ;
         }
     }
 }", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
@@ -556,7 +775,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void DiagnosticsStillFunctionEvenIfReplacementNeverHappens()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -596,7 +817,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void RegistersAllInterfacesIfServiceTypeIsNotDefined()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -635,14 +858,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddScoped(typeof (Temp.Providers.IProviderB), typeof (Temp.Providers.ProviderA));
-            services.AddScoped(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Scoped(typeof (Temp.Providers.IProviderB), typeof (Temp.Providers.ProviderA)), describer.Scoped(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA))}
+
+            ;
         }
 
         public static int Main()
@@ -657,7 +886,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void RegistersAllInterfacesAndTheClassIfTheClassIsPublicIfServiceTypeIsNotDefined()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA
                     {
@@ -696,15 +927,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddSingleton(typeof (Temp.Providers.IProviderB), typeof (Temp.Providers.ProviderA));
-            services.AddSingleton(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA));
-            services.AddSingleton(typeof (Temp.Providers.ProviderA), typeof (Temp.Providers.ProviderA));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Singleton(typeof (Temp.Providers.IProviderB), typeof (Temp.Providers.ProviderA)), describer.Singleton(typeof (Temp.Providers.IProviderA), typeof (Temp.Providers.ProviderA)), describer.Singleton(typeof (Temp.Providers.ProviderA), typeof (Temp.Providers.ProviderA))}
+
+            ;
         }
 
         public static int Main()
@@ -719,7 +955,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void UnderstandsOpenEverything()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA<T,Y>
                     {
@@ -735,7 +973,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                         }
                     }
                 }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)))
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderB1<T>
                     {
@@ -751,7 +991,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                         }
                 }
                 }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)))
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderB<T>
                     {
@@ -767,7 +1009,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                         }
                     }
                 }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)))
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderC<T>
                     {
@@ -796,16 +1040,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddSingleton(typeof (Temp.Providers.IProviderA<, >), typeof (Temp.Providers.ProviderA<, >));
-            services.AddTransient(typeof (Temp.Providers.IProviderB1<>), typeof (Temp.Providers.ProviderB1<>));
-            services.AddTransient(typeof (Temp.Providers.IProviderB<>), typeof (Temp.Providers.ProviderB<>));
-            services.AddScoped(typeof (Temp.Providers.IProviderC<>), typeof (Temp.Providers.ProviderC<>));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Singleton(typeof (Temp.Providers.IProviderA<, >), typeof (Temp.Providers.ProviderA<, >)), describer.Transient(typeof (Temp.Providers.IProviderB1<>), typeof (Temp.Providers.ProviderB1<>)), describer.Transient(typeof (Temp.Providers.IProviderB<>), typeof (Temp.Providers.ProviderB<>)), describer.Scoped(typeof (Temp.Providers.IProviderC<>), typeof (Temp.Providers.ProviderC<>))}
+
+            ;
         }
 
         public static int Main()
@@ -820,7 +1068,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void ReportsOpenDiagnostics()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA<T>
                     {
@@ -861,7 +1111,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void OpenDiagnosticsStillFunctionEvenIfReplacementNeverHappens()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA<T>
                     {
@@ -901,7 +1153,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void RegistersAllInterfacesIfOpenServiceTypeIsNotDefined()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA<T>
                     {
@@ -940,14 +1194,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddScoped(typeof (Temp.Providers.IProviderB<>), typeof (Temp.Providers.ProviderA<>));
-            services.AddScoped(typeof (Temp.Providers.IProviderA<>), typeof (Temp.Providers.ProviderA<>));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Scoped(typeof (Temp.Providers.IProviderB<>), typeof (Temp.Providers.ProviderA<>)), describer.Scoped(typeof (Temp.Providers.IProviderA<>), typeof (Temp.Providers.ProviderA<>))}
+
+            ;
         }
 
         public static int Main()
@@ -962,7 +1222,9 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         public void RegistersAllInterfacesAndTheClassIfTheClassIsPublicIfOpenServiceTypeIsNotDefined()
         {
             var compilation = GetCompilation()
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"namespace Temp.Providers
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
+
+                namespace Temp.Providers
                 {
                     public interface IProviderA<T>
                     {
@@ -1001,15 +1263,20 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
-            Assert.Equal(@"namespace Temp
+            Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
+
+namespace Temp
 {
     public class Startup
     {
-        void Configure(IServiceCollection services)
+        IEnumerable<IServiceDescriptor> Configure()
         {
-            services.AddSingleton(typeof (Temp.Providers.IProviderB<>), typeof (Temp.Providers.ProviderA<>));
-            services.AddSingleton(typeof (Temp.Providers.IProviderA<>), typeof (Temp.Providers.ProviderA<>));
-            services.AddSingleton(typeof (Temp.Providers.ProviderA<>), typeof (Temp.Providers.ProviderA<>));
+            var describer = new ServiceDescriber();
+            return new[]
+            {
+            describer.Singleton(typeof (Temp.Providers.IProviderB<>), typeof (Temp.Providers.ProviderA<>)), describer.Singleton(typeof (Temp.Providers.IProviderA<>), typeof (Temp.Providers.ProviderA<>)), describer.Singleton(typeof (Temp.Providers.ProviderA<>), typeof (Temp.Providers.ProviderA<>))}
+
+            ;
         }
 
         public static int Main()
