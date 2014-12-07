@@ -1,5 +1,5 @@
 -
-  version: "1.0.0-{build}"
+  version: "1.0.0-beta-{build}"
   os: Visual Studio 2015 Preview
   branches:
     except:
@@ -22,7 +22,7 @@
     - build.cmd
 
 -
-  version: "1.0.0-{build}"
+  version: "1.0.0.{build}"
   os: Visual Studio 2015 Preview
   branches:
     only:
@@ -38,6 +38,10 @@
   build_script:
     - set K_BUILD_VERSION=%APPVEYOR_BUILD_NUMBER% #temp
     - set K_BUILD_VERSION=%K_BUILD_VERSION:~-4%
+    - echo APPVEYOR
+    - echo APPVEYOR_REPO_TAG
+    - echo APPVEYOR_REPO_BRANCH
+    - echo K_BUILD_VERSION
     - build.cmd
 
   artifacts:
