@@ -1,4 +1,5 @@
 ﻿using Blacklite;
+using Blacklite.Framework;
 using Microsoft.Framework.DependencyInjection;
 using System;
 using System.Collections.Generic;
