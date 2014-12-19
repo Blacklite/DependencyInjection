@@ -37,6 +37,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Depende
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Compiler.Tests", "tests\DependencyInjection.Compiler.Tests\DependencyInjection.Compiler.Tests.kproj", "{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "WebApplication1", "tests\WebApplication1\WebApplication1.kproj", "{7D61F15A-7C5C-445E-B96D-B4C7C4277625}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ClassLibrary1", "tests\ClassLibrary1\ClassLibrary1.kproj", "{53091EFA-04B7-4361-B37F-4F5363AC1ADD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +63,14 @@ Global
 		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D61F15A-7C5C-445E-B96D-B4C7C4277625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D61F15A-7C5C-445E-B96D-B4C7C4277625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D61F15A-7C5C-445E-B96D-B4C7C4277625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D61F15A-7C5C-445E-B96D-B4C7C4277625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53091EFA-04B7-4361-B37F-4F5363AC1ADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53091EFA-04B7-4361-B37F-4F5363AC1ADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53091EFA-04B7-4361-B37F-4F5363AC1ADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53091EFA-04B7-4361-B37F-4F5363AC1ADD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,5 +80,7 @@ Global
 		{093F8D18-6275-4580-A82C-69EB166ABF8D} = {85C16FCE-E197-4628-ABF2-A3DD2BD74975}
 		{DAEF780D-78E8-4E99-B23B-E917016B0F61} = {732F8612-93E6-44B8-8E75-CBD5895605D8}
 		{E9FBC4F7-450C-4E05-9CBF-B2E5732A2618} = {85C16FCE-E197-4628-ABF2-A3DD2BD74975}
+		{7D61F15A-7C5C-445E-B96D-B4C7C4277625} = {85C16FCE-E197-4628-ABF2-A3DD2BD74975}
+		{53091EFA-04B7-4361-B37F-4F5363AC1ADD} = {85C16FCE-E197-4628-ABF2-A3DD2BD74975}
 	EndGlobalSection
 EndGlobal

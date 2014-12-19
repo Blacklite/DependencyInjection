@@ -1,11 +1,8 @@
 ﻿{
+    "version": "1.0.0-*",
     "dependencies": {
         "Blacklite.Framework.DependencyInjection": "",
-        "Xunit.KRunner": "1.0.0-rc1-*"
-    },
-
-    "commands": {
-        "test": "Xunit.KRunner"
+        "Blacklite.Framework.DependencyInjection.Preprocess": { "version": "", "type": "build" }
     },
 
     "frameworks": {
@@ -15,6 +12,7 @@
         },
         "aspnetcore50": {
             "dependencies": {
+                "System.Runtime": "4.0.20-beta-22231"
             }
         }
     }
