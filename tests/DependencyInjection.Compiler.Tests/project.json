@@ -1,7 +1,7 @@
 ﻿{
     "dependencies": {
         "Blacklite.Framework.DependencyInjection.Preprocess": "",
-        "Xunit.KRunner": "1.0.0-beta2-*"
+        "Xunit.KRunner": "1.0.0-rc1-*"
     },
 
     "commands": {
@@ -11,6 +11,10 @@
     "frameworks": {
         "aspnet50": {
             "frameworkAssemblies": { "System.Text.Encoding": "4.0.0.0" },
+            "dependencies": {
+            }
+        },
+        "aspnetcore50": {
             "dependencies": {
             }
         }

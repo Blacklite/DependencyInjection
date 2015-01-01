@@ -16,7 +16,7 @@ namespace DependencyInjection.Compiler.Tests.Compiler
     {
         private CSharpCompilation GetCompilation()
         {
-            return CSharpCompilation.Create("PreprocessAnnotationTests.dll",
+            var compliation = CSharpCompilation.Create("PreprocessAnnotationTests.dll",
                 references: new[] {
                 // This isn't very nice...
                     MetadataReference.CreateFromStream(System.IO.File.OpenRead(@"C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorlib.dll"))
@@ -59,8 +59,12 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                                 return collection;
                             }
                         }
-                    }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)))
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
+                    }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
+
+            var rnd = new Random().Next(1, 3);
+            if (rnd == 1)
+            {
+                compliation = compliation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
                     using Microsoft.Framework.DependencyInjection;
                     namespace Temp {
                         public class Startup {
@@ -71,6 +75,37 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                             public static int Main() { return 0; }
                         }
                     }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
+            }
+            if (rnd == 2)
+            {
+                compliation = compliation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
+                    using Microsoft.Framework.DependencyInjection;
+                    namespace Temp {
+                        public class Startup {
+                            void Configure(IServiceCollection services) {
+                                services.AddAssembly(this);
+                            }
+
+                            public static int Main() { return 0; }
+                        }
+                    }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
+            }
+            if (rnd == 3)
+            {
+                compliation = compliation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
+                    using Microsoft.Framework.DependencyInjection;
+                    namespace Temp {
+                        public class Startup {
+                            void Configure(IServiceCollection services) {
+                                services.AddAssembly(typeof(Startup).Assembly);
+                            }
+
+                            public static int Main() { return 0; }
+                        }
+                    }", Encoding.UTF8), CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp6)));
+            }
+
+            return compliation;
         }
 
         [Fact]
