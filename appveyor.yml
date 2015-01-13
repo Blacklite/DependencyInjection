@@ -1,49 +1,33 @@
--
-  version: "1.0.0-beta-{build}"
-  os: Visual Studio 2015 Preview
-  branches:
-    except:
-      - refs/pull/*
+os: Visual Studio 2015 Preview
 
-  # Fix line endings in Windows. (runs before repo cloning)
-  init:
-    - git config --global core.autocrlf input
+nuget:
+  account_feed: true
+  project_feed: true
+  disable_publish_on_pr: true
+# Fix line endings in Windows. (runs before repo cloning)
+init:
+  - git config --global core.autocrlf input
 
-  # this turns of AppVeyor automatic searching for test-assemblies, not the actual testing
-  test: off
+# this turns of AppVeyor automatic searching for test-assemblies, not the actual testing
+test: off
 
-  build_script:
-    - set K_BUILD_VERSION=%APPVEYOR_BUILD_NUMBER% #temp
-    - set K_BUILD_VERSION=%K_BUILD_VERSION:~-4%
-    - echo %APPVEYOR%
-    - echo %APPVEYOR_REPO_TAG%
-    - echo %APPVEYOR_REPO_BRANCH%
-    - echo %K_BUILD_VERSION%
-    - build.cmd
+build_script:
+  - set K_BUILD_VERSION=%APPVEYOR_BUILD_NUMBER% #temp
+  - set K_BUILD_VERSION=%K_BUILD_VERSION:~-4%
+  - echo %APPVEYOR%
+  - echo %APPVEYOR_REPO_TAG%
+  - echo %APPVEYOR_REPO_BRANCH%
+  - echo %K_BUILD_VERSION%
+  - build.cmd
 
--
-  version: "1.0.0.{build}"
-  os: Visual Studio 2015 Preview
-  branches:
-    only:
-      - master
+artifacts:
+  - path: artifacts\build\*.nupkg
 
-  # Fix line endings in Windows. (runs before repo cloning)
-  init:
-    - git config --global core.autocrlf input
-
-  # this turns of AppVeyor automatic searching for test-assemblies, not the actual testing
-  test: off
-
-  build_script:
-    - set K_BUILD_VERSION=%APPVEYOR_BUILD_NUMBER% #temp
-    - set K_BUILD_VERSION=%K_BUILD_VERSION:~-4%
-    - echo %APPVEYOR%
-    - echo %APPVEYOR_REPO_TAG%
-    - echo %APPVEYOR_REPO_BRANCH%
-    - echo %K_BUILD_VERSION%
-    - build.cmd
-
-  artifacts:
-    - path: artifacts\build\*.nupkg
-
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/blacklite-vnext/
+  api_key:
+    secure: eoBrSWDtOXSxyUOoCSTyQCeDkvU18W67pE3w26viEUBRi1K4Tru0cTjUtDUB7l9V
+  skip_symbols: true
+  on:
+    branch: master
