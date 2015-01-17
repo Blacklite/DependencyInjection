@@ -1,7 +1,7 @@
 ﻿{
     "dependencies": {
         "Blacklite.Framework.DependencyInjection.Preprocess": "",
-        "Xunit.KRunner": "1.0.0-rc1-*"
+        "Xunit.KRunner": "1.0.0-beta3-*"
     },
 
     "commands": {

@@ -1,9 +1,9 @@
 ﻿{
     "version": "1.0.0-*",
     "dependencies": {
-        "Microsoft.Framework.DependencyInjection": "1.0.0-rc1-*",
-        "Microsoft.CodeAnalysis.Common": "1.0.0-rc1-*",
-        "Microsoft.CodeAnalysis.CSharp": "1.0.0-rc1-*"
+        "Microsoft.Framework.DependencyInjection": "1.0.0-beta3-*",
+        "Microsoft.CodeAnalysis.Common": "1.0.0-beta3-*",
+        "Microsoft.CodeAnalysis.CSharp": "1.0.0-beta3-*"
     },
 
     "frameworks": {
