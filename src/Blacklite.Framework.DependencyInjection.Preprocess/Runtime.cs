@@ -5,12 +5,6 @@ using System.Collections.Generic;
 
 namespace Microsoft.Framework.Runtime
 {
-    //[AssemblyNeutral]
-    //public class AssemblyNeutralAttribute : Attribute
-    //{
-    //}
-
-    [AssemblyNeutral]
     public interface ICompileModule
     {
         void BeforeCompile(IBeforeCompileContext context);
@@ -18,7 +12,6 @@ namespace Microsoft.Framework.Runtime
         void AfterCompile(IAfterCompileContext context);
     }
 
-    [AssemblyNeutral]
     public interface IBeforeCompileContext
     {
         CSharpCompilation CSharpCompilation { get; set; }
@@ -28,7 +21,6 @@ namespace Microsoft.Framework.Runtime
         IList<Diagnostic> Diagnostics { get; }
     }
 
-    [AssemblyNeutral]
     public interface IAfterCompileContext
     {
         CSharpCompilation CSharpCompilation { get; set; }
