@@ -1,9 +1,9 @@
 ﻿{
     "version": "1.0.0-*",
     "dependencies": {
-        "Microsoft.Framework.DependencyInjection": "1.0.0-beta4-*",
-        "Microsoft.CodeAnalysis.Common": "1.0.0-beta4-*",
-        "Microsoft.CodeAnalysis.CSharp": "1.0.0-beta4-*"
+        "Microsoft.Framework.DependencyInjection": "1.0.0-beta3",
+        "Microsoft.CodeAnalysis.Common": "1.0.0-beta3",
+        "Microsoft.CodeAnalysis.CSharp": "1.0.0-beta3"
     },
 
 	"compilationOptions": {
@@ -13,9 +13,9 @@
 	"frameworks": {
 		"aspnet50": {
 			"frameworkAssemblies": {
-				"System.Runtime": "4.0.20.0",
-				"System.Collections": "4.0.10.0",
-				"System.Threading.Tasks": "4.0.10.0",
+				"System.Runtime": "4.0.10.0",
+				"System.Collections": "4.0.0.0",
+				"System.Threading.Tasks": "4.0.0.0",
 				"System.IO": "4.0.0.0"
 			},
 			"dependencies": {

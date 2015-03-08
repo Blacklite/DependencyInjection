@@ -42,8 +42,8 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
                 Category,
                 DiagnosticSeverity.Error,
                 true,
-                description: string.Empty,
-                helpLink: string.Empty);
+                /*description:*/ string.Empty,
+                /*helpLink:*/ string.Empty);
         }
 
         public static DiagnosticDescriptor ImplementationMissMatch { get; } = ImplementationMissMatchRule.Rule;
