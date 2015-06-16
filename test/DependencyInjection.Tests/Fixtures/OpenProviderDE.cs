@@ -18,7 +18,7 @@ namespace DependencyInjection.Tests.Fixtures
         T Value { get; }
     }
 
-    [ServiceDescriptor(Lifecycle = LifecycleKind.Scoped)]
+    [ServiceDescriptor(Lifetime = ServiceLifetime.Scoped)]
     class OpenProviderDE<T> : IOpenProviderD<T>, IOpenProviderE<T>, IOpenProviderF<string>
     {
         public int ItemA

@@ -8,13 +8,14 @@ using Xunit;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
 using Blacklite.Framework.DependencyInjection.compiler.preprocess;
+using Microsoft.Framework.Runtime.Roslyn;
 
 namespace DependencyInjection.Compiler.Tests.Compiler
 {
 
     public class PreprocessAddAssemblyTests
     {
-        private CSharpCompilation GetCompilation()
+        private CSharpCompilation GetCSharpCompilation()
         {
             var compliation = CSharpCompilation.Create("PreprocessAnnotationTests.dll",
                 references: new[] {
@@ -26,7 +27,7 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                     using System;
 
                     namespace Microsoft.Framework.DependencyInjection {
-                        public enum LifecycleKind {
+                        public enum ServiceLifetime {
                             Singleton,
                             Scoped,
 	                        Transient
@@ -41,7 +42,7 @@ namespace DependencyInjection.Compiler.Tests.Compiler
                             }
 
                             public Type ServiceType { get; set; }
-                            public LifecycleKind Lifecycle { get; set; } = LifecycleKind.Transient;
+                            public ServiceLifetime Lifetime { get; set; } = ServiceLifetime.Transient;
                         }
 
                         public interface IServiceCollection {}
@@ -111,19 +112,19 @@ namespace DependencyInjection.Compiler.Tests.Compiler
         [Fact]
         public void Compiles()
         {
-            var compilation = GetCompilation();
+            var compilation = GetCSharpCompilation();
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -140,13 +141,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
         [Fact]
         public void DefaultsToTransient()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -167,15 +168,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -193,14 +194,14 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
 
         [Fact]
         public void UnderstandsTransient()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -209,7 +210,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA), Lifecycle = LifecycleKind.Transient)]
+                    [ServiceDescriptor(typeof(IProviderA), Lifetime = ServiceLifetime.Transient)]
                     public class ProviderA : IProviderA
                     {
                         public decimal GetValue()
@@ -221,15 +222,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -247,14 +248,14 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
 
         [Fact]
         public void UnderstandsScoped()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -263,7 +264,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA), Lifecycle = LifecycleKind.Scoped)]
+                    [ServiceDescriptor(typeof(IProviderA), Lifetime = ServiceLifetime.Scoped)]
                     public class ProviderA : IProviderA
                     {
                         public decimal GetValue()
@@ -275,15 +276,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -301,13 +302,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
         [Fact]
         public void UnderstandsSingleton()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -316,7 +317,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA), Lifecycle = LifecycleKind.Singleton)]
+                    [ServiceDescriptor(typeof(IProviderA), Lifetime = ServiceLifetime.Singleton)]
                     public class ProviderA : IProviderA
                     {
                         public decimal GetValue()
@@ -328,15 +329,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -354,13 +355,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
         [Fact]
         public void UnderstandsEverything()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -369,7 +370,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA), Lifecycle = LifecycleKind.Singleton)]
+                    [ServiceDescriptor(typeof(IProviderA), Lifetime = ServiceLifetime.Singleton)]
                     public class ProviderA : IProviderA
                     {
                         public decimal GetValue()
@@ -403,7 +404,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderB), Lifecycle = LifecycleKind.Transient)]
+                    [ServiceDescriptor(typeof(IProviderB), Lifetime = ServiceLifetime.Transient)]
                     public class ProviderB : IProviderB
                     {
                         public decimal GetValue()
@@ -420,7 +421,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderC), Lifecycle = LifecycleKind.Scoped)]
+                    [ServiceDescriptor(typeof(IProviderC), Lifetime = ServiceLifetime.Scoped)]
                     public class ProviderC : IProviderC
                     {
                         public decimal GetValue()
@@ -432,15 +433,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -461,13 +462,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
         [Fact]
         public void ReportsDiagnostics()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -481,7 +482,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA), Lifecycle = LifecycleKind.Singleton)]
+                    [ServiceDescriptor(typeof(IProviderA), Lifetime = ServiceLifetime.Singleton)]
                     public class ProviderA : IProviderB
                     {
                         public decimal GetValue()
@@ -494,14 +495,14 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.True(context.Diagnostics.Any());
         }
@@ -509,7 +510,7 @@ namespace Temp
         [Fact]
         public void AddAssemblyWorksWithThisExpression()
         {
-            var compilation = GetCompilation();
+            var compilation = GetCSharpCompilation();
 
             compilation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
                         using Microsoft.Framework.DependencyInjection;
@@ -525,15 +526,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -550,13 +551,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+}", context.Compilation.SyntaxTrees.Last().GetText().ToString());
         }
 
         [Fact]
         public void AddAssemblyWorksWithTypeExpression()
         {
-            var compilation = GetCompilation();
+            var compilation = GetCSharpCompilation();
 
             compilation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
                         using Microsoft.Framework.DependencyInjection;
@@ -572,15 +573,15 @@ namespace Temp {
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -597,13 +598,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+}", context.Compilation.SyntaxTrees.Last().GetText().ToString());
         }
 
         [Fact]
         public void AddAssemblyWorksWithAssemblyExpression()
         {
-            var compilation = GetCompilation();
+            var compilation = GetCSharpCompilation();
 
             compilation.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
                         using Microsoft.Framework.DependencyInjection;
@@ -619,15 +620,15 @@ namespace Temp {
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -644,13 +645,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+}", context.Compilation.SyntaxTrees.Last().GetText().ToString());
         }
 
         [Fact]
         public void AddAssemblyIsLeftAloneForOtherTypes()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
                     using Microsoft.Framework.DependencyInjection;
 namespace Temp {
@@ -667,15 +668,15 @@ namespace Temp {
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.Last().GetText().ToString());
 
             Assert.Equal(@"
                     using Microsoft.Framework.DependencyInjection;
@@ -688,13 +689,13 @@ namespace Temp {
                                 collection.AddAssembly(typeof(NotStartup));
                             }
                         }
-                    }", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+                    }", context.Compilation.SyntaxTrees.Last().GetText().ToString());
         }
 
         [Fact]
         public void AddAssemblyIsReplacedByDefault()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"
                     using Microsoft.Framework.DependencyInjection;
 namespace Temp {
@@ -708,15 +709,15 @@ namespace Temp {
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.Last().GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -728,13 +729,13 @@ namespace Temp
         {
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.Last().GetText().ToString());
+}", context.Compilation.SyntaxTrees.Last().GetText().ToString());
         }
 
         [Fact]
         public void DiagnosticsStillFunctionEvenIfReplacementNeverHappens()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -748,7 +749,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA), Lifecycle = LifecycleKind.Singleton)]
+                    [ServiceDescriptor(typeof(IProviderA), Lifetime = ServiceLifetime.Singleton)]
                     public class ProviderA : IProviderB
                     {
                         public decimal GetValue()
@@ -760,14 +761,14 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.True(context.Diagnostics.Any());
         }
@@ -775,7 +776,7 @@ namespace Temp
         [Fact]
         public void RegistersAllInterfacesIfServiceTypeIsNotDefined()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -789,7 +790,7 @@ namespace Temp
                         decimal GetValue2();
                     }
 
-                    [ServiceDescriptor(Lifecycle = LifecycleKind.Scoped)]
+                    [ServiceDescriptor(Lifetime = ServiceLifetime.Scoped)]
                     class ProviderA : IProviderB, IProviderA
                     {
                         public decimal GetValue()
@@ -806,15 +807,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -833,13 +834,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
         [Fact]
         public void RegistersAllInterfacesAndTheClassIfTheClassIsPublicIfServiceTypeIsNotDefined()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -853,7 +854,7 @@ namespace Temp
                         decimal GetValue2();
                     }
 
-                    [ServiceDescriptor( Lifecycle = LifecycleKind.Singleton )]
+                    [ServiceDescriptor( Lifetime = ServiceLifetime.Singleton )]
                     public class ProviderA : IProviderB, IProviderA
                     {
                         public decimal GetValue()
@@ -870,15 +871,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -898,13 +899,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
         [Fact]
         public void UnderstandsOpenEverything()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -913,7 +914,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA<,>), Lifecycle = LifecycleKind.Singleton)]
+                    [ServiceDescriptor(typeof(IProviderA<,>), Lifetime = ServiceLifetime.Singleton)]
                     public class ProviderA<T,Y> : IProviderA<T,Y>
                     {
                         public decimal GetValue()
@@ -947,7 +948,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderB<T>), Lifecycle = LifecycleKind.Transient)]
+                    [ServiceDescriptor(typeof(IProviderB<T>), Lifetime = ServiceLifetime.Transient)]
                     public class ProviderB<T> : IProviderB<T>
                     {
                         public decimal GetValue()
@@ -964,7 +965,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderC<>), Lifecycle = LifecycleKind.Scoped)]
+                    [ServiceDescriptor(typeof(IProviderC<>), Lifetime = ServiceLifetime.Scoped)]
                     public class ProviderC<T> : IProviderC<T>
                     {
                         public decimal GetValue()
@@ -976,15 +977,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -1005,13 +1006,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
         [Fact]
         public void ReportsOpenDiagnostics()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -1025,7 +1026,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA<>), Lifecycle = LifecycleKind.Singleton)]
+                    [ServiceDescriptor(typeof(IProviderA<>), Lifetime = ServiceLifetime.Singleton)]
                     public class ProviderA<T> : IProviderB<T>
                     {
                         public decimal GetValue()
@@ -1038,14 +1039,14 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.True(context.Diagnostics.Any());
         }
@@ -1053,7 +1054,7 @@ namespace Temp
         [Fact]
         public void OpenDiagnosticsStillFunctionEvenIfReplacementNeverHappens()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -1067,7 +1068,7 @@ namespace Temp
                         decimal GetValue();
                     }
 
-                    [ServiceDescriptor(typeof(IProviderA<>), Lifecycle = LifecycleKind.Singleton)]
+                    [ServiceDescriptor(typeof(IProviderA<>), Lifetime = ServiceLifetime.Singleton)]
                     public class ProviderA<T> : IProviderB<T>
                     {
                         public decimal GetValue()
@@ -1079,14 +1080,14 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.True(context.Diagnostics.Any());
         }
@@ -1094,7 +1095,7 @@ namespace Temp
         [Fact]
         public void RegistersAllInterfacesIfOpenServiceTypeIsNotDefined()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -1108,7 +1109,7 @@ namespace Temp
                         decimal GetValue2();
                     }
 
-                    [ServiceDescriptor(Lifecycle = LifecycleKind.Scoped)]
+                    [ServiceDescriptor(Lifetime = ServiceLifetime.Scoped)]
                     class ProviderA<T> : IProviderB<T>, IProviderA<T>
                     {
                         public decimal GetValue()
@@ -1125,15 +1126,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -1152,13 +1153,13 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
 
         [Fact]
         public void RegistersAllInterfacesAndTheClassIfTheClassIsPublicIfOpenServiceTypeIsNotDefined()
         {
-            var compilation = GetCompilation()
+            var compilation = GetCSharpCompilation()
                 .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(SourceText.From(@"using Microsoft.Framework.DependencyInjection;
                 namespace Temp.Providers
                 {
@@ -1172,7 +1173,7 @@ namespace Temp
                         decimal GetValue2();
                     }
 
-                    [ServiceDescriptor( Lifecycle = LifecycleKind.Singleton )]
+                    [ServiceDescriptor( Lifetime = ServiceLifetime.Singleton )]
                     public class ProviderA<T> : IProviderB<T>, IProviderA<T>
                     {
                         public decimal GetValue()
@@ -1189,15 +1190,15 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                CSharpCompilation = compilation
+                Compilation = compilation
             };
 
             var unit = new PreprocessAnnotation();
 
-            unit.BeforeCompile((Microsoft.Framework.Runtime.IBeforeCompileContext)context);
+            unit.BeforeCompile(context);
             Assert.False(context.Diagnostics.Any());
 
-            //Console.WriteLine(context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+            //Console.WriteLine(context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
 
             Assert.Equal(@"using Microsoft.Framework.DependencyInjection;
 
@@ -1217,7 +1218,7 @@ namespace Temp
             return 0;
         }
     }
-}", context.CSharpCompilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
+}", context.Compilation.SyntaxTrees.First(x => x.GetText().ToString().Contains("class Startup")).GetText().ToString());
         }
     }
 }

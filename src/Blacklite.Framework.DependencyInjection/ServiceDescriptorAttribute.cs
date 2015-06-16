@@ -13,6 +13,6 @@ namespace Microsoft.Framework.DependencyInjection
         }
 
         public Type ServiceType { get; }
-        public LifecycleKind Lifecycle { get; set; } = LifecycleKind.Transient;
+        public ServiceLifetime Lifetime { get; set; } = ServiceLifetime.Transient;
     }
 }

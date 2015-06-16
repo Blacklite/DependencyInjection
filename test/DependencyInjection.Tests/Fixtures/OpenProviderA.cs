@@ -7,7 +7,7 @@ namespace DependencyInjection.Tests.Fixtures
     {
     }
 
-    [ServiceDescriptor(typeof(IOpenProviderA<,>), Lifecycle = LifecycleKind.Singleton)]
+    [ServiceDescriptor(typeof(IOpenProviderA<,>), Lifetime = ServiceLifetime.Singleton)]
     public class OpenProviderA<T,Y> : IOpenProviderA<T,Y>
     {
     }

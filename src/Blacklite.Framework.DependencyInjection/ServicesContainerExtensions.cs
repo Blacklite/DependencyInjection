@@ -25,7 +25,7 @@ namespace Microsoft.Framework.DependencyInjection
 
         public static IServiceCollection AddAssembly([NotNull] this IServiceCollection collection, [NotNull] Assembly assembly)
         {
-            foreach (var descriptor in ServiceDescriberExtensions.GetServiceDescriptors(assembly))
+            foreach (var descriptor in ServiceDescriptorExtensions.GetServiceDescriptors(assembly))
                 collection.Add(descriptor);
             return collection;
         }

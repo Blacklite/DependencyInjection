@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22609.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{732F8612-93E6-44B8-8E75-CBD5895605D8}"
 EndProject
@@ -33,9 +33,9 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.Depende
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Blacklite.Framework.DependencyInjection.Preprocess", "src\Blacklite.Framework.DependencyInjection.Preprocess\Blacklite.Framework.DependencyInjection.Preprocess.kproj", "{7F9AA318-24C1-4DE3-8A24-8702A89E704A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Compiler.Tests", "test\DependencyInjection.Compiler.Tests\DependencyInjection.Compiler.Tests.kproj", "{35204F0C-1860-43B8-AA09-EA3AC5E35629}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Compiler.Tests", "test\DependencyInjection.Compiler.Tests\DependencyInjection.Compiler.Tests.xproj", "{35204F0C-1860-43B8-AA09-EA3AC5E35629}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Tests", "test\DependencyInjection.Tests\DependencyInjection.Tests.kproj", "{0F9B7478-59DE-45ED-9631-8AD8CC9500CF}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DependencyInjection.Tests", "test\DependencyInjection.Tests\DependencyInjection.Tests.xproj", "{0F9B7478-59DE-45ED-9631-8AD8CC9500CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

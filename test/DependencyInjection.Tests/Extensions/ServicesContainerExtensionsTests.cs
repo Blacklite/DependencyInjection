@@ -40,14 +40,14 @@ namespace DependencyInjection.Tests
             Assert.Equal(collection.Count(), 14);
         }
 
-        private class ServiceDescriptorEqualityComparer : IEqualityComparer<IServiceDescriptor>
+        private class ServiceDescriptorEqualityComparer : IEqualityComparer<ServiceDescriptor>
         {
-            public bool Equals(IServiceDescriptor x, IServiceDescriptor y)
+            public bool Equals(ServiceDescriptor x, ServiceDescriptor y)
             {
-                return x.ImplementationType == y.ImplementationType && x.Lifecycle == y.Lifecycle && x.ServiceType == y.ServiceType;
+                return x.ImplementationType == y.ImplementationType && x.Lifetime == y.Lifetime && x.ServiceType == y.ServiceType;
             }
 
-            public int GetHashCode(IServiceDescriptor obj)
+            public int GetHashCode(ServiceDescriptor obj)
             {
                 return obj.GetHashCode();
             }
@@ -60,27 +60,27 @@ namespace DependencyInjection.Tests
 
             collection.AddAssembly(this);
 
-            var descriptor = new ServiceDescriptor(typeof(IProviderB), typeof(ProviderBC), LifecycleKind.Transient);
+            var descriptor = new ServiceDescriptor(typeof(IProviderB), typeof(ProviderBC), ServiceLifetime.Transient);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(IProviderC), typeof(ProviderBC), LifecycleKind.Transient);
+            descriptor = new ServiceDescriptor(typeof(IProviderC), typeof(ProviderBC), ServiceLifetime.Transient);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(ProviderBC), typeof(ProviderBC), LifecycleKind.Transient);
+            descriptor = new ServiceDescriptor(typeof(ProviderBC), typeof(ProviderBC), ServiceLifetime.Transient);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(IProviderD), typeof(ProviderDE), LifecycleKind.Scoped);
+            descriptor = new ServiceDescriptor(typeof(IProviderD), typeof(ProviderDE), ServiceLifetime.Scoped);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(IProviderE), typeof(ProviderDE), LifecycleKind.Scoped);
+            descriptor = new ServiceDescriptor(typeof(IProviderE), typeof(ProviderDE), ServiceLifetime.Scoped);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(ProviderDE), typeof(ProviderDE), LifecycleKind.Scoped);
+            descriptor = new ServiceDescriptor(typeof(ProviderDE), typeof(ProviderDE), ServiceLifetime.Scoped);
 
             Assert.DoesNotContain(descriptor, collection, eqalityComparer);
         }
@@ -93,7 +93,7 @@ namespace DependencyInjection.Tests
 
             collection.AddAssembly(this);
 
-            var descriptor = new ServiceDescriptor(typeof(IProviderA), typeof(ProviderA), LifecycleKind.Singleton);
+            var descriptor = new ServiceDescriptor(typeof(IProviderA), typeof(ProviderA), ServiceLifetime.Singleton);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
         }
@@ -106,7 +106,7 @@ namespace DependencyInjection.Tests
 
             collection.AddAssembly(this);
 
-            var descriptor = new ServiceDescriptor(typeof(IService1), typeof(Service1), LifecycleKind.Transient);
+            var descriptor = new ServiceDescriptor(typeof(IService1), typeof(Service1), ServiceLifetime.Transient);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
         }
@@ -119,7 +119,7 @@ namespace DependencyInjection.Tests
 
             collection.AddAssembly(this);
 
-            var descriptor = new ServiceDescriptor(typeof(IService2), typeof(Service2), LifecycleKind.Scoped);
+            var descriptor = new ServiceDescriptor(typeof(IService2), typeof(Service2), ServiceLifetime.Scoped);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
         }
@@ -132,7 +132,7 @@ namespace DependencyInjection.Tests
 
             collection.AddAssembly(this);
 
-            var descriptor = new ServiceDescriptor(typeof(IOpenProviderA<,>), typeof(OpenProviderA<,>), LifecycleKind.Singleton);
+            var descriptor = new ServiceDescriptor(typeof(IOpenProviderA<,>), typeof(OpenProviderA<,>), ServiceLifetime.Singleton);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
         }
@@ -144,31 +144,31 @@ namespace DependencyInjection.Tests
 
             collection.AddAssembly(this);
 
-            var descriptor = new ServiceDescriptor(typeof(IOpenProviderB<>), typeof(OpenProviderBC<>), LifecycleKind.Transient);
+            var descriptor = new ServiceDescriptor(typeof(IOpenProviderB<>), typeof(OpenProviderBC<>), ServiceLifetime.Transient);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(IOpenProviderC<>), typeof(OpenProviderBC<>), LifecycleKind.Transient);
+            descriptor = new ServiceDescriptor(typeof(IOpenProviderC<>), typeof(OpenProviderBC<>), ServiceLifetime.Transient);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(OpenProviderBC<>), typeof(OpenProviderBC<>), LifecycleKind.Transient);
+            descriptor = new ServiceDescriptor(typeof(OpenProviderBC<>), typeof(OpenProviderBC<>), ServiceLifetime.Transient);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(IOpenProviderD<>), typeof(OpenProviderDE<>), LifecycleKind.Scoped);
+            descriptor = new ServiceDescriptor(typeof(IOpenProviderD<>), typeof(OpenProviderDE<>), ServiceLifetime.Scoped);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(IOpenProviderE<>), typeof(OpenProviderDE<>), LifecycleKind.Scoped);
+            descriptor = new ServiceDescriptor(typeof(IOpenProviderE<>), typeof(OpenProviderDE<>), ServiceLifetime.Scoped);
 
             Assert.Contains(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(IOpenProviderF<>), typeof(OpenProviderDE<>), LifecycleKind.Scoped);
+            descriptor = new ServiceDescriptor(typeof(IOpenProviderF<>), typeof(OpenProviderDE<>), ServiceLifetime.Scoped);
 
             Assert.DoesNotContain(descriptor, collection, eqalityComparer);
 
-            descriptor = new ServiceDescriptor(typeof(OpenProviderDE<>), typeof(OpenProviderDE<>), LifecycleKind.Scoped);
+            descriptor = new ServiceDescriptor(typeof(OpenProviderDE<>), typeof(OpenProviderDE<>), ServiceLifetime.Scoped);
 
             Assert.DoesNotContain(descriptor, collection, eqalityComparer);
         }

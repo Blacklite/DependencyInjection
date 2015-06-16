@@ -8,7 +8,7 @@ namespace DependencyInjection.Tests.Fixtures
         decimal GetValue();
     }
 
-    [ServiceDescriptor(typeof(IProviderA), Lifecycle = LifecycleKind.Singleton)]
+    [ServiceDescriptor(typeof(IProviderA), Lifetime = ServiceLifetime.Singleton)]
     public class ProviderA : IProviderA
     {
         public decimal GetValue()

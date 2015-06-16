@@ -13,7 +13,7 @@ namespace DependencyInjection.Tests.Fixtures
         decimal ItemB { get; }
     }
 
-    [ServiceDescriptor(Lifecycle = LifecycleKind.Scoped)]
+    [ServiceDescriptor(Lifetime = ServiceLifetime.Scoped)]
     class ProviderDE : IProviderD, IProviderE
     {
         public int ItemA

@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
-using Microsoft.Framework.Runtime;
+using Microsoft.Framework.Runtime.Roslyn;
 
 namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
 {
@@ -67,58 +67,6 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
 
             // Each return the container for each class
             foreach (var expression in addAssemblyExpressions)
-            {
-                if (expression.Declaration.ArgumentList.Arguments.Count() == 1)
-                {
-                    ClassDeclarationSyntax classSyntax;
-                    SyntaxNode parent = expression.Declaration;
-                    while (!(parent is ClassDeclarationSyntax))
-                    {
-                        parent = parent.Parent;
-                    }
-                    classSyntax = parent as ClassDeclarationSyntax;
-
-                    var replace = false;
-
-                    var typeofExpression = expression.Declaration.ArgumentList.Arguments[0].Expression as TypeOfExpressionSyntax;
-                    if (typeofExpression != null)
-                    {
-                        if (typeofExpression.Type.ToString() == classSyntax.Identifier.ToString())
-                        {
-                            replace = true;
-                        }
-                    }
-
-                    var thisExpression = expression.Declaration.ArgumentList.Arguments[0].Expression as ThisExpressionSyntax;
-                    if (thisExpression != null)
-                    {
-                        replace = true;
-                    }
-
-                    if (replace)
-                    {
-                        yield return expression;
-                    }
-                }
-            }
-        }
-
-        private IEnumerable<Container<InvocationExpressionSyntax, IMethodSymbol>> GetFromAssemblyMethodCall(SyntaxTree syntaxTree, SemanticModel model)
-        {
-            // Find all classes that have our attribute.
-            var fromAssemblyExpressions = syntaxTree
-                       .GetRoot()
-                       .DescendantNodes()
-                       .OfType<MemberAccessExpressionSyntax>()
-                       .Where(declaration => declaration.Name.ToString().Contains("FromAssembly"))
-                       .Where(declaration => declaration.Parent is InvocationExpressionSyntax)
-                       .Where(declaration => model.GetSymbolInfo(declaration.Parent).Symbol is IMethodSymbol)
-                       .Select(declaration => new Container<InvocationExpressionSyntax, IMethodSymbol>((InvocationExpressionSyntax)declaration.Parent, (IMethodSymbol)model.GetSymbolInfo(declaration.Parent).Symbol))
-                       .Where(x => x.Symbol.IsExtensionMethod)
-                       .Where(x => x.Symbol.ReceiverType.ToString() == "Microsoft.Framework.DependencyInjection.ServiceDescriber");
-
-            // Each return the container for each class
-            foreach (var expression in fromAssemblyExpressions)
             {
                 if (expression.Declaration.ArgumentList.Arguments.Count() == 1)
                 {
@@ -229,7 +177,7 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
             return implementationType;
         }
 
-        private IEnumerable<StatementResult> GetStatements(IBeforeCompileContext context, IEnumerable<Container<ClassDeclarationSyntax, INamedTypeSymbol>> containers)
+        private IEnumerable<StatementResult> GetStatements(BeforeCompileContext context, IEnumerable<Container<ClassDeclarationSyntax, INamedTypeSymbol>> containers)
         {
             foreach (var container in containers)
             {
@@ -295,19 +243,19 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
                     );
                 }
 
-                var hasLifecycle = attributeSymbol.NamedArguments.Any(z => z.Key == "Lifecycle");
-                var lifecycle = "Transient";
+                var hasLifetime = attributeSymbol.NamedArguments.Any(z => z.Key == "Lifetime");
+                var Lifetime = "Transient";
 
-                if (hasLifecycle)
+                if (hasLifetime)
                 {
-                    lifecycle = GetLifecycle((int)attributeSymbol.NamedArguments.Single(z => z.Key == "Lifecycle").Value.Value);
+                    Lifetime = GetLifetime((int)attributeSymbol.NamedArguments.Single(z => z.Key == "Lifetime").Value.Value);
                 }
 
                 // Build the Statement
                 yield return new StatementResult()
                 {
                     implementationQualifiedName = implementationQualifiedName,
-                    lifecycle = lifecycle,
+                    Lifetime = Lifetime,
                     serviceQualifiedNames = serviceQualifiedNames
                 };
             }
@@ -315,25 +263,25 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
 
         class StatementResult
         {
-            public string lifecycle;
+            public string Lifetime;
             public IEnumerable<NameSyntax> serviceQualifiedNames;
             public NameSyntax implementationQualifiedName;
         }
 
-        public string GetLifecycle(int enumValue)
+        public string GetLifetime(int enumValue)
         {
-            string lifecycle = "Transient";
+            string Lifetime = "Transient";
             switch (enumValue)
             {
                 case 1:
-                    lifecycle = "Scoped";
+                    Lifetime = "Scoped";
                     break;
                 case 0:
-                    lifecycle = "Singleton";
+                    Lifetime = "Singleton";
                     break;
             }
 
-            return lifecycle;
+            return Lifetime;
         }
 
         private Func<string, IEnumerable<StatementSyntax>> GetCollectionAddAssemblyExpressionStatement(StatementResult result)
@@ -346,7 +294,7 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
                             SyntaxFactory.MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 SyntaxFactory.IdentifierName(identifierName),
-                                name: SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("Add" + result.lifecycle))
+                                name: SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("Add" + result.Lifetime))
                             ),
                             SyntaxFactory.ArgumentList(
                                 SyntaxFactory.SeparatedList(
@@ -361,39 +309,15 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
             };
         }
 
-        private Func<string, IEnumerable<ExpressionSyntax>> GetCollectionFromAssemblyExpressionStatement(StatementResult result)
+        public void BeforeCompile(BeforeCompileContext context)
         {
-            // I hear there is a better way to do this... that will be released sometime.
-            return (string identifierName) =>
-            {
-                return result.serviceQualifiedNames.Select(serviceName =>
-                    SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.IdentifierName(identifierName),
-                            name: SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(result.lifecycle))
-                        ),
-                        SyntaxFactory.ArgumentList(
-                            SyntaxFactory.SeparatedList(
-                                new[] {
-                                    SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(serviceName)),
-                                    SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(result.implementationQualifiedName))
-                                })
-                        )
-                    )
-                );
-            };
-        }
-
-        public void BeforeCompile(IBeforeCompileContext context)
-        {
-            var newCompilation = context.CSharpCompilation;
+            var newCSharpCompilation = context.Compilation;
 
             // Find all the class containers we care about.
-            var containers = newCompilation.SyntaxTrees
+            var containers = newCSharpCompilation.SyntaxTrees
                 .Select(tree => new
                 {
-                    Model = newCompilation.GetSemanticModel(tree),
+                    Model = newCSharpCompilation.GetSemanticModel(tree),
                     SyntaxTree = tree,
                     Root = tree.GetRoot()
                 });
@@ -401,24 +325,20 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
             // Build the registration statements out of the containers.
             var addAssemblyNodes = GetStatements(context, containers.SelectMany(ctx => GetClassesWithImplementationAttribute(ctx.SyntaxTree, ctx.Model)).ToArray()).ToArray();
             var addAssemblyMethodCalls = containers.SelectMany(ctx => GetAddAssemblyMethodCall(ctx.SyntaxTree, ctx.Model));
-            newCompilation = ProcessAddAssemblyMethodCalls(newCompilation, addAssemblyNodes, addAssemblyMethodCalls);
+            newCSharpCompilation = ProcessAddAssemblyMethodCalls(newCSharpCompilation, addAssemblyNodes, addAssemblyMethodCalls);
 
-            containers = newCompilation.SyntaxTrees
+            containers = newCSharpCompilation.SyntaxTrees
                 .Select(tree => new
                 {
-                    Model = newCompilation.GetSemanticModel(tree),
+                    Model = newCSharpCompilation.GetSemanticModel(tree),
                     SyntaxTree = tree,
                     Root = tree.GetRoot()
                 });
 
-            var fromAssemblyNodes = GetStatements(context, containers.SelectMany(ctx => GetClassesWithImplementationAttribute(ctx.SyntaxTree, ctx.Model)).ToArray()).ToArray();
-            var fromAssemblyMethodCalls = containers.SelectMany(ctx => GetFromAssemblyMethodCall(ctx.SyntaxTree, ctx.Model));
-            newCompilation = ProcessFromAssemblyMethodCalls(newCompilation, fromAssemblyNodes, fromAssemblyMethodCalls);
-
-            context.CSharpCompilation = newCompilation;
+            context.Compilation = newCSharpCompilation;
         }
 
-        private CSharpCompilation ProcessAddAssemblyMethodCalls(CSharpCompilation compilation, IEnumerable<StatementResult> nodes, IEnumerable<Container<InvocationExpressionSyntax, IMethodSymbol>> containers)
+        private CSharpCompilation ProcessAddAssemblyMethodCalls(CSharpCompilation CSharpCompilation, IEnumerable<StatementResult> nodes, IEnumerable<Container<InvocationExpressionSyntax, IMethodSymbol>> containers)
         {
             foreach (var methods in containers.GroupBy(m => m.Declaration.SyntaxTree))
             {
@@ -440,51 +360,13 @@ namespace Blacklite.Framework.DependencyInjection.compiler.preprocess
                 var syntaxTree = methods.Key;
                 var newSyntaxTree = syntaxTree.WithRootAndOptions(syntaxRoot, syntaxTree.Options);
 
-                compilation = compilation.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
+                CSharpCompilation = CSharpCompilation.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
             }
 
-            return compilation;
+            return CSharpCompilation;
         }
 
-        private CSharpCompilation ProcessFromAssemblyMethodCalls(CSharpCompilation compilation, IEnumerable<StatementResult> nodes, IEnumerable<Container<InvocationExpressionSyntax, IMethodSymbol>> containers)
-        {
-            foreach (var methods in containers.GroupBy(m => m.Declaration.SyntaxTree))
-            {
-                SyntaxNode syntaxRoot = null;
-                foreach (var method in methods)
-                {
-                    if (syntaxRoot == null)
-                    {
-                        syntaxRoot = method.Declaration.SyntaxTree.GetRoot();
-                    }
-
-                    var identifierName = ((MemberAccessExpressionSyntax)method.Declaration.Expression).Expression.ToString();
-
-                    var methodNodes = nodes.Select(GetCollectionFromAssemblyExpressionStatement).SelectMany(x => x(identifierName));
-                    var node = SyntaxFactory.ExpressionStatement(
-                        SyntaxFactory.ImplicitArrayCreationExpression(
-                            SyntaxFactory.InitializerExpression(
-                                SyntaxKind.ArrayInitializerExpression,
-                                SyntaxFactory.SeparatedList(methodNodes)
-                            )
-                        )
-                    );
-
-                    syntaxRoot = syntaxRoot
-                       .ReplaceNode(method.Declaration, node.Expression)
-                       .NormalizeWhitespace();
-                }
-
-                var syntaxTree = methods.Key;
-                var newSyntaxTree = syntaxTree.WithRootAndOptions(syntaxRoot, syntaxTree.Options);
-
-                compilation = compilation.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
-            }
-
-            return compilation;
-        }
-
-        public void AfterCompile(IAfterCompileContext context)
+        public void AfterCompile(AfterCompileContext context)
         {
             // Not Used
         }

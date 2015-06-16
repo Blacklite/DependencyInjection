@@ -1,4 +1,4 @@
-﻿using Blacklite;
+using Blacklite;
 using Blacklite.Framework;
 using Microsoft.Framework.DependencyInjection;
 using System;
@@ -9,25 +9,9 @@ using System.Reflection;
 // We're cheating here, so we don't have to have two different difference namespaces everywhere
 namespace Microsoft.Framework.DependencyInjection
 {
-    public static class ServiceDescriberExtensions
+    public static class ServiceDescriptorExtensions
     {
-        public static IEnumerable<IServiceDescriptor> FromAssembly([NotNull] this ServiceDescriber describer, [NotNull] object context)
-        {
-            return describer.FromAssembly(context.GetType());
-        }
-
-        public static IEnumerable<IServiceDescriptor> FromAssembly([NotNull] this ServiceDescriber describer, [NotNull] Type type)
-        {
-            var assembly = type.GetTypeInfo().Assembly;
-            return describer.FromAssembly(assembly);
-        }
-
-        public static IEnumerable<IServiceDescriptor> FromAssembly([NotNull] this ServiceDescriber describer, [NotNull] Assembly assembly)
-        {
-            return GetServiceDescriptors(assembly);
-        }
-
-        internal static IEnumerable<IServiceDescriptor> GetServiceDescriptors(Assembly assembly)
+        internal static IEnumerable<ServiceDescriptor> GetServiceDescriptors(Assembly assembly)
         {
             var services = assembly.DefinedTypes
                 .Select(x => new
@@ -78,9 +62,9 @@ namespace Microsoft.Framework.DependencyInjection
                             .Any(z => z == serviceType)
                         )
                     {
-                        var lifecycle = service.Attribute.Lifecycle;
+                        var Lifetime = service.Attribute.Lifetime;
 
-                        yield return new ServiceDescriptor(serviceType, implementationType, service.Attribute.Lifecycle);
+                        yield return new ServiceDescriptor(serviceType, implementationType, service.Attribute.Lifetime);
                     }
                     else
                     {

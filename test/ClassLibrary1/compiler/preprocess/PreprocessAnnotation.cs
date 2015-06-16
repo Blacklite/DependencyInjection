@@ -295,19 +295,19 @@
 //                    );
 //                }
 
-//                var hasLifecycle = attributeSymbol.NamedArguments.Any(z => z.Key == "Lifecycle");
-//                var lifecycle = "Transient";
+//                var hasLifetime = attributeSymbol.NamedArguments.Any(z => z.Key == "Lifetime");
+//                var Lifetime = "Transient";
 
-//                if (hasLifecycle)
+//                if (hasLifetime)
 //                {
-//                    lifecycle = GetLifecycle((int)attributeSymbol.NamedArguments.Single(z => z.Key == "Lifecycle").Value.Value);
+//                    Lifetime = GetLifetime((int)attributeSymbol.NamedArguments.Single(z => z.Key == "Lifetime").Value.Value);
 //                }
 
 //                // Build the Statement
 //                yield return new StatementResult()
 //                {
 //                    implementationQualifiedName = implementationQualifiedName,
-//                    lifecycle = lifecycle,
+//                    Lifetime = Lifetime,
 //                    serviceQualifiedNames = serviceQualifiedNames
 //                };
 //            }
@@ -315,25 +315,25 @@
 
 //        class StatementResult
 //        {
-//            public string lifecycle;
+//            public string Lifetime;
 //            public IEnumerable<NameSyntax> serviceQualifiedNames;
 //            public NameSyntax implementationQualifiedName;
 //        }
 
-//        public string GetLifecycle(int enumValue)
+//        public string GetLifetime(int enumValue)
 //        {
-//            string lifecycle = "Transient";
+//            string Lifetime = "Transient";
 //            switch (enumValue)
 //            {
 //                case 1:
-//                    lifecycle = "Scoped";
+//                    Lifetime = "Scoped";
 //                    break;
 //                case 0:
-//                    lifecycle = "Singleton";
+//                    Lifetime = "Singleton";
 //                    break;
 //            }
 
-//            return lifecycle;
+//            return Lifetime;
 //        }
 
 //        private Func<string, IEnumerable<StatementSyntax>> GetCollectionAddAssemblyExpressionStatement(StatementResult result)
@@ -346,7 +346,7 @@
 //                            SyntaxFactory.MemberAccessExpression(
 //                                SyntaxKind.SimpleMemberAccessExpression,
 //                                SyntaxFactory.IdentifierName(identifierName),
-//                                name: SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("Add" + result.lifecycle))
+//                                name: SyntaxFactory.IdentifierName(SyntaxFactory.Identifier("Add" + result.Lifetime))
 //                            ),
 //                            SyntaxFactory.ArgumentList(
 //                                SyntaxFactory.SeparatedList(
@@ -371,7 +371,7 @@
 //                        SyntaxFactory.MemberAccessExpression(
 //                            SyntaxKind.SimpleMemberAccessExpression,
 //                            SyntaxFactory.IdentifierName(identifierName),
-//                            name: SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(result.lifecycle))
+//                            name: SyntaxFactory.IdentifierName(SyntaxFactory.Identifier(result.Lifetime))
 //                        ),
 //                        SyntaxFactory.ArgumentList(
 //                            SyntaxFactory.SeparatedList(

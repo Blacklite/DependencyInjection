@@ -12,12 +12,14 @@
 [Rr]elease/
 x64/
 build/
+artifacts/
 bld/
 [Bb]in/
 [Oo]bj/
 
 # Roslyn cache directories
 *.ide/
+*.vs/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -191,3 +193,4 @@ ModelManifest.xml
 
 lib/
 .nuget/
+project.lock.json

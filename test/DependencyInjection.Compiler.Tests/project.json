@@ -1,20 +1,17 @@
 ﻿{
     "dependencies": {
         "Blacklite.Framework.DependencyInjection.Preprocess": "1.0.0-*",
-        "xunit.runner.kre": "1.0.0-beta3-*"
+        "xunit": "2.1.0-*",
+        "xunit.runner.dnx": "2.1.0-*"
     },
 
     "commands": {
-        "test": "xunit.runner.kre"
+        "test": "xunit.runner.dnx"
     },
 
     "frameworks": {
-        "aspnet50": {
-            "frameworkAssemblies": { "System.Text.Encoding": "4.0.0.0" },
-            "dependencies": {
-            }
-        },
-        "aspnetcore50": {
+        "dnx451": { },
+        "dnxcore50": {
             "dependencies": {
             }
         }

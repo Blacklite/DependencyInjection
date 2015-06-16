@@ -8,7 +8,7 @@ namespace DependencyInjection.Tests.Fixtures
         int Value { get; }
     }
 
-    [ServiceDescriptor(typeof(IService2), Lifecycle = LifecycleKind.Scoped)]
+    [ServiceDescriptor(typeof(IService2), Lifetime = ServiceLifetime.Scoped)]
     class Service2 : IService2
     {
         public int Value
