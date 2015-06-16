@@ -16,7 +16,7 @@ Used by itself the attribute will register all the classes (and base class) with
 --------------------------------------
 Extension Method. Scans the given assembly, for the ServiceDescriptor attribute, and adds them to the Service Collection.
 
-`ServiceDescriber.FromAssembly(....)`
+`ServiceDescriptor.FromAssembly(....)`
 -------------------------------------
 Extension Method. Scans the given assembly and generates descriptions for each one that was found.
 

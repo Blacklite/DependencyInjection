@@ -115,7 +115,7 @@
 //                       .Where(declaration => model.GetSymbolInfo(declaration.Parent).Symbol is IMethodSymbol)
 //                       .Select(declaration => new Container<InvocationExpressionSyntax, IMethodSymbol>((InvocationExpressionSyntax)declaration.Parent, (IMethodSymbol)model.GetSymbolInfo(declaration.Parent).Symbol))
 //                       .Where(x => x.Symbol.IsExtensionMethod)
-//                       .Where(x => x.Symbol.ReceiverType.ToString() == "Microsoft.Framework.DependencyInjection.ServiceDescriber");
+//                       .Where(x => x.Symbol.ReceiverType.ToString() == "Microsoft.Framework.DependencyInjection.ServiceDescriptor");
 
 //            // Each return the container for each class
 //            foreach (var expression in fromAssemblyExpressions)
