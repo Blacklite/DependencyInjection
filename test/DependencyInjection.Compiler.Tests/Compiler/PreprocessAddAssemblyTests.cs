@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Text;
 using System.Text;
 using Blacklite.Framework.DependencyInjection.compiler.preprocess;
 using Microsoft.Framework.Runtime.Roslyn;
+using System.Collections.Generic;
 
 namespace DependencyInjection.Compiler.Tests.Compiler
 {
@@ -116,7 +117,8 @@ namespace DependencyInjection.Compiler.Tests.Compiler
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -168,7 +170,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -222,7 +225,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -276,7 +280,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -329,7 +334,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -433,7 +439,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -495,7 +502,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -526,7 +534,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -573,7 +582,8 @@ namespace Temp {
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -620,7 +630,8 @@ namespace Temp {
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -668,7 +679,8 @@ namespace Temp {
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -709,7 +721,8 @@ namespace Temp {
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -761,7 +774,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -807,7 +821,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -871,7 +886,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -977,7 +993,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -1039,7 +1056,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -1080,7 +1098,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -1126,7 +1145,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();
@@ -1190,7 +1210,8 @@ namespace Temp
 
             var context = new BeforeCompileContext()
             {
-                Compilation = compilation
+                Compilation = compilation,
+                Diagnostics = new List<Diagnostic>()
             };
 
             var unit = new PreprocessAnnotation();

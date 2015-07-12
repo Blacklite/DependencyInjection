@@ -1,10 +1,10 @@
 ﻿{
     "version": "1.0.0-*",
     "dependencies": {
-        "Microsoft.Framework.DependencyInjection": "1.0.0-beta5-*",
-        "Microsoft.CodeAnalysis.Common": "1.0.0-rc2",
-        "Microsoft.CodeAnalysis.CSharp": "1.0.0-rc2",
-        "Microsoft.Framework.Runtime.Roslyn.Abstractions": "1.0.0-beta5-*"
+        "Microsoft.Framework.DependencyInjection": "1.0.0-beta5",
+        "Microsoft.CodeAnalysis.Common": "1.0.0-rc3",
+        "Microsoft.CodeAnalysis.CSharp": "1.0.0-rc3",
+        "Microsoft.Framework.Runtime.Roslyn.Abstractions": "1.0.0-beta5"
     },
 
     "compilationOptions": {

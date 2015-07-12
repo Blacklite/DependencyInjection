@@ -194,3 +194,5 @@ ModelManifest.xml
 lib/
 .nuget/
 project.lock.json
+*.sln
+*.xproj

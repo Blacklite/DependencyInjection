@@ -12,13 +12,10 @@ init:
 test: off
 
 build_script:
-  - set K_BUILD_VERSION=%APPVEYOR_BUILD_NUMBER% #temp
-  - set K_BUILD_VERSION=%K_BUILD_VERSION:~-4%
-  - echo %APPVEYOR%
-  - echo %APPVEYOR_REPO_TAG%
-  - echo %APPVEYOR_REPO_BRANCH%
-  - echo %K_BUILD_VERSION%
-  - build.cmd
+  - "echo APPVEYOR: %APPVEYOR%"
+  - "echo APPVEYOR_REPO_TAG: %APPVEYOR_REPO_TAG%"
+  - "echo APPVEYOR_REPO_BRANCH: %APPVEYOR_REPO_BRANCH%"
+  - ps: .\build.ps1
 
 artifacts:
   - path: artifacts\build\*.nupkg

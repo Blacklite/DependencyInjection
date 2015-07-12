@@ -11,10 +11,5 @@ namespace ClassLibrary1
         {
             services.AddAssembly(this);
         }
-
-        public IEnumerable<ServiceDescriptor> GetStuff(ServiceDescriptor describer)
-        {
-            return describer.FromAssembly(this);
-        }
     }
 }
